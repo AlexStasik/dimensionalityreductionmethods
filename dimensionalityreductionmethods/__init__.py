@@ -1,1 +1,1 @@
-from .dr_methods import DimensionalityReductionHandler
+from .dr_handler import DimensionalityReductionHandler
