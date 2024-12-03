@@ -258,3 +258,28 @@ def run_lle(scaled_data):
         "reconstruction_error": reconstruction_errors_percent,
         "time": runtime,
     }
+
+
+def apply_autoencoder(data, n_components, hidden_layer_neurons):
+    """
+    Helper function to apply an autoencoder for dimensionality reduction.
+
+    Parameters:
+        data (array-like): Input data for dimensionality reduction.
+
+    Returns:
+        embedding_2d (array-like): 2D representation of the input data.
+    """
+    input_layer = Input(shape=(data.shape[1],))
+    encoded = Dense(hidden_layer_neurons, activation="relu")(input_layer)
+    encoded = Dense(n_components, activation="relu")(encoded)
+    decoded = Dense(hidden_layer_neurons, activation="relu")(encoded)
+    decoded = Dense(data.shape[1], activation="sigmoid")(decoded)
+
+    autoencoder = Model(inputs=input_layer, outputs=decoded)
+    encoder = Model(inputs=input_layer, outputs=encoded)
+
+    autoencoder.compile(optimizer="adam", loss="mse")
+    autoencoder.fit(data, data, epochs=50, batch_size=32, shuffle=True, verbose=0)
+
+    return encoder.predict(data)

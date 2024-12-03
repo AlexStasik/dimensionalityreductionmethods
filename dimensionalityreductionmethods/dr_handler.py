@@ -14,7 +14,7 @@ import umap
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 
-from dr_methods import (
+from .dr_methods import (
     run_pca,
     run_isomap,
     run_tsne,
@@ -22,6 +22,7 @@ from dr_methods import (
     run_autoencoder,
     run_kpca,
     run_lle,
+    apply_autoencoder,
 )
 
 
@@ -69,7 +70,7 @@ class DimensionalityReductionHandler:
             "isomap": run_isomap,
             "tsne": run_tsne,
             "umap": run_umap,
-            "autoencoder": lambda: run_autoencoder(scaled_data, autoencoder_max_dim),
+            "autoencoder": lambda data: run_autoencoder(data, autoencoder_max_dim),
             "kpca": run_kpca,
             "lle": run_lle,
         }
@@ -88,7 +89,7 @@ class DimensionalityReductionHandler:
         self.methods = valid_methods
 
         results_list = Parallel(n_jobs=-1, timeout=7200)(
-            delayed(method_funcs[method])() for method in valid_methods
+            delayed(method_funcs[method])(scaled_data) for method in valid_methods
         )
 
         results = dict(zip(self.methods, results_list))
@@ -297,7 +298,6 @@ class DimensionalityReductionHandler:
         for method in self.methods:
             if method not in self.results:
                 continue
-
             embedding_2d = None
 
             if method == "tsne":
@@ -310,8 +310,8 @@ class DimensionalityReductionHandler:
                 reducer = umap.UMAP(n_components=2)
                 embedding_2d = reducer.fit_transform(self.data)
             elif method == "autoencoder":
-                embedding_2d = self._apply_autoencoder(
-                    n_components=2, hidden_layer_neurons=4
+                embedding_2d = apply_autoencoder(
+                    data=self.data, n_components=2, hidden_layer_neurons=4
                 )
             elif method == "pca":
                 pca = PCA(n_components=2)
@@ -344,32 +344,6 @@ class DimensionalityReductionHandler:
         plt.tight_layout()
         plt.show()
 
-    def _apply_autoencoder(self, n_components, hidden_layer_neurons):
-        """
-        Helper function to apply an autoencoder for dimensionality reduction.
-
-        Parameters:
-            data (array-like): Input data for dimensionality reduction.
-
-        Returns:
-            embedding_2d (array-like): 2D representation of the input data.
-        """
-        input_layer = Input(shape=(self.data.shape[1],))
-        encoded = Dense(hidden_layer_neurons, activation="relu")(input_layer)
-        encoded = Dense(n_components, activation="relu")(encoded)
-        decoded = Dense(hidden_layer_neurons, activation="relu")(encoded)
-        decoded = Dense(self.data.shape[1], activation="sigmoid")(decoded)
-
-        autoencoder = Model(inputs=input_layer, outputs=decoded)
-        encoder = Model(inputs=input_layer, outputs=encoded)
-
-        autoencoder.compile(optimizer="adam", loss="mse")
-        autoencoder.fit(
-            self.data, self.data, epochs=50, batch_size=32, shuffle=True, verbose=0
-        )
-
-        return encoder.predict(self.data)
-
     def visualization_3d(self, labels=None, plot_in_3d=False):
         """
         Visualizes the results of dimensionality reduction in 3D.
@@ -390,7 +364,6 @@ class DimensionalityReductionHandler:
         plot_idx = 0
         for method in self.methods:
             if method in self.results:
-
                 embedding = None
 
                 if method == "tsne":
@@ -405,8 +378,10 @@ class DimensionalityReductionHandler:
                     reducer = umap.UMAP(n_components=n_components)
                     embedding = reducer.fit_transform(self.data)
                 elif method == "autoencoder":
-                    embedding = self._apply_autoencoder(
-                        n_components=n_components, hidden_layer_neurons=6
+                    embedding = apply_autoencoder(
+                        data=self.data,
+                        n_components=n_components,
+                        hidden_layer_neurons=6,
                     )
                 elif method == "pca":
                     pca = PCA(n_components=n_components)
