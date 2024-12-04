@@ -86,3 +86,5 @@ drh.table()
 drh.visualization()
 ???drh.visualization_3d(plot_in_3d=True)???
 ```
+
+The examples folder includes sample notebooks featuring toy datasets that serve as helpful references.

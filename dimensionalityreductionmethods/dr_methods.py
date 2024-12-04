@@ -11,6 +11,26 @@ from tensorflow.keras.layers import Input, Dense
 
 
 def run_pca(scaled_data):
+    """
+    Perform Principal Component Analysis (PCA) on the provided scaled data.
+
+    This method applies PCA to reduce the dimensionality of the data and calculates the reconstruction error and explained variance
+    for each principal component. It also returns the runtime of the PCA process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the PCA analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (None): Trustworthiness is not calculated for PCA.
+            - "reconstruction_error" (list): A list of reconstruction errors (as percentages) for each number of components.
+            - "time" (float): The time taken to run the PCA analysis.
+
+    Notes:
+        The reconstruction error is calculated as the percentage of variance not explained by each principal component. It is based on
+        the cumulative explained variance ratio of PCA.
+    """
     start_pca = time.time()
 
     pca = PCA()
@@ -32,6 +52,22 @@ def run_pca(scaled_data):
 
 
 def run_isomap(scaled_data):
+    """
+    Perform Isomap dimensionality reduction on the provided scaled data.
+
+    This method applies Isomap to reduce the dimensionality of the data for different numbers of components (from 1 to n) and calculates
+    the reconstruction error and trustworthiness for each transformation. It also returns the runtime of the Isomap process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the Isomap analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (list): A list of trustworthiness scores (as percentages) for each number of components.
+            - "reconstruction_error" (list): A list of reconstruction errors (as percentages) for each number of components.
+            - "time" (float): The time taken to run the Isomap analysis.
+    """
     start_isomap = time.time()
 
     n_components = np.arange(1, scaled_data.shape[1] + 1)
@@ -69,6 +105,22 @@ def run_isomap(scaled_data):
 
 
 def run_tsne(scaled_data):
+    """
+    Perform t-SNE (t-Distributed Stochastic Neighbor Embedding) on the provided scaled data.
+
+    This method applies t-SNE to reduce the dimensionality of the data for different numbers of components (from 1 to n) and calculates
+    the trustworthiness for each transformation. It also returns the runtime of the t-SNE process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the t-SNE analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (list): A list of trustworthiness scores (as percentages) for each number of components.
+            - "reconstruction_error" (None): Reconstruction error is not calculated for t-SNE.
+            - "time" (float): The time taken to run the t-SNE analysis.
+    """
     start_tsne = time.time()
 
     n_components_range = np.arange(1, scaled_data.shape[1] + 1)
@@ -97,6 +149,22 @@ def run_tsne(scaled_data):
 
 
 def run_umap(scaled_data):
+    """
+    Perform UMAP (Uniform Manifold Approximation and Projection) on the provided scaled data.
+
+    This method applies UMAP to reduce the dimensionality of the data for different numbers of components (from 1 to n) and calculates
+    the trustworthiness for each transformation. It also returns the runtime of the UMAP process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the UMAP analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (list): A list of trustworthiness scores (as percentages) for each number of components.
+            - "reconstruction_error" (None): Reconstruction error is not calculated for UMAP.
+            - "time" (float): The time taken to run the UMAP analysis.
+    """
     start_umap = time.time()
 
     n_components = np.arange(1, scaled_data.shape[1] + 1)
@@ -125,6 +193,23 @@ def run_umap(scaled_data):
 
 
 def run_autoencoder(scaled_data, autoencoder_max_dim):
+    """
+    Perform Autoencoder-based dimensionality reduction on the provided scaled data.
+
+    This method trains an autoencoder for different numbers of encoding dimensions (from 1 to the specified maximum dimension) and
+    calculates both trustworthiness and reconstruction error for each transformation. It also returns the runtime of the process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+        autoencoder_max_dim (int): The maximum number of encoding dimensions to consider for the autoencoder.
+
+    Returns:
+        dict: A dictionary containing the results of the Autoencoder analysis:
+            - "components" (numpy array): The number of encoding dimensions considered (from 1 to n).
+            - "trustworthiness" (list): A list of trustworthiness scores (as percentages) for each number of components.
+            - "reconstruction_error" (list): A list of reconstruction errors (as percentages) for each number of components.
+            - "time" (float): The time taken to run the Autoencoder analysis.
+    """
     start_autoencoder = time.time()
 
     input_dim = scaled_data.shape[1]
@@ -193,6 +278,22 @@ def run_autoencoder(scaled_data, autoencoder_max_dim):
 
 
 def run_kpca(scaled_data):
+    """
+    Perform Kernel Principal Component Analysis (KPCA) on the provided scaled data.
+
+    This method applies KPCA using a Radial Basis Function (RBF) kernel to reduce the dimensionality of the data for different
+    numbers of components. It calculates the reconstruction error for each transformation and also returns the runtime of the process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the KPCA analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (None): Trustworthiness is not calculated for KPCA.
+            - "reconstruction_error" (list): A list of reconstruction errors (as percentages) for each number of components.
+            - "time" (float): The time taken to run the KPCA analysis.
+    """
     start_kpca = time.time()
 
     reconstruction_errors = []
@@ -223,6 +324,23 @@ def run_kpca(scaled_data):
 
 
 def run_lle(scaled_data):
+    """
+    Perform Locally Linear Embedding (LLE) on the provided scaled data.
+
+    This method applies LLE to reduce the dimensionality of the data for different numbers of components. It calculates the
+    reconstruction error for each transformation using pairwise distances between the original and the reduced data.
+    It also returns the runtime of the process.
+
+    Parameters:
+        scaled_data (numpy array): The input data that has been preprocessed.
+
+    Returns:
+        dict: A dictionary containing the results of the LLE analysis:
+            - "components" (numpy array): The number of components considered (from 1 to n).
+            - "trustworthiness" (None): Trustworthiness is not calculated for LLE.
+            - "reconstruction_error" (list): A list of reconstruction errors (as percentages) for each number of components.
+            - "time" (float): The time taken to run the LLE analysis.
+    """
     start_lle = time.time()
 
     reconstruction_errors = []
@@ -260,15 +378,20 @@ def run_lle(scaled_data):
     }
 
 
-def apply_autoencoder(data, n_components, hidden_layer_neurons):
+def get_autoencoder_embedding(data, n_components, hidden_layer_neurons):
     """
-    Helper function to apply an autoencoder for dimensionality reduction.
+    Helper function to apply an autoencoder for dimensionality reduction and return the lower-dimensional embedding.
 
     Parameters:
-        data (array-like): Input data for dimensionality reduction.
+        data (numpy array): The input data to reduce.
+        n_components (int): The desired number of components (dimensionality) for the reduced representation.
+        hidden_layer_neurons (int): The number of neurons in the hidden layers of the autoencoder.
 
     Returns:
-        embedding_2d (array-like): 2D representation of the input data.
+        numpy array: The reduced-dimensional representation of the input data.
+
+    Notes:
+        The autoencoder is trained using mean squared error (MSE) loss, and the encoder is used to obtain the embedding.
     """
     input_layer = Input(shape=(data.shape[1],))
     encoded = Dense(hidden_layer_neurons, activation="relu")(input_layer)

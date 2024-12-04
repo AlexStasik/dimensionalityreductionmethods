@@ -23,4 +23,7 @@ setup(
     url="https://github.com/DarianSINTEF/dimensionalityreductionmethods",
     packages=find_packages(),
     install_requires=INSTALL_REQUIRES,
+    classifiers=[
+        "Programming Language :: Python :: 3",
+    ],
 )

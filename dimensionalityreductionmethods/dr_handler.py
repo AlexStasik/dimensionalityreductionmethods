@@ -1,4 +1,4 @@
-import sys, time, random, warnings, pprint
+import sys, random, warnings, time, pprint
 
 import numpy as np
 import pandas as pd
@@ -11,9 +11,6 @@ from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import Isomap, TSNE, LocallyLinearEmbedding
 import umap
 
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense
-
 from .dr_methods import (
     run_pca,
     run_isomap,
@@ -22,7 +19,7 @@ from .dr_methods import (
     run_autoencoder,
     run_kpca,
     run_lle,
-    apply_autoencoder,
+    get_autoencoder_embedding,
 )
 
 
@@ -43,10 +40,10 @@ class DimensionalityReductionHandler:
 
     def __init__(self, data):
         """
-        Initializes the class with the provided data. Also initializes the results to be None
+        Initializes the class with the provided data.
 
         Parameters:
-            data: a numpy array representing the data to perform dimensionality reduction on TODO: numpy array?
+            data (numpy array): The dataset to perform dimensionality reduction on.
         """
         self.data = data
         self.results = None
@@ -58,7 +55,7 @@ class DimensionalityReductionHandler:
         self, methods, autoencoder_max_dim=sys.maxsize
     ):
         """
-        Performs dimensionality reduction using the provided methods on the data from the initialization. The results are printed out.
+        Applies dimensionality reduction techniques to the dataset and computes performance metrics.
 
         Supported methods: PCA, KPCA, Isomap, UMAP, TSNE, Autoencoder, LLE.
 
@@ -102,12 +99,20 @@ class DimensionalityReductionHandler:
 
     def plot_results(self):
         """
-        Plots the results from the analyze_dimensionality_reduction method on a single figure.
-        The `analyze_dimensionality_reduction` method must be called before using this function.
+        Visualizes the results of the dimensionality reduction analysis.
+
+        Generates a comprehensive plot showcasing reconstruction error and trustworthiness across the components for each applied dimensionality
+        reduction method. A separate zoomed-in plot highlights trustworthiness metrics in detail.
+
+        Requirements:
+            - The `analyze_dimensionality_reduction` method must be called prior to use.
+
+        Raises:
+            UserWarning: If `analyze_dimensionality_reduction` has not been called.
         """
         if self.results == None:
             warnings.warn(
-                "Please call the analyze_dimensionality_reduction method first before calling this one.",
+                "Please call the `analyze_dimensionality_reduction` method first before calling the `plot_results` method.",
                 category=UserWarning,
             )
             return
@@ -217,11 +222,25 @@ class DimensionalityReductionHandler:
     def table(self):
         """
         Generate a summary table of results from dimensionality reduction methods.
-        Includes optimal trustworthiness and reconstruction error components, along with their corresponding values and computation time.
+
+        This method summarizes key metrics for each dimensionality reduction technique, including:
+        - Optimal trustworthiness component and its value.
+        - Optimal reconstruction error component and its value.
+        - Computation time for each method.
+
+        Requirements:
+            - The `analyze_dimensionality_reduction` method must be called prior to use.
+
+        Returns:
+            pandas.DataFrame: A table summarizing the performance metrics of each method.
+
+        Raises:
+            UserWarning: If `analyze_dimensionality_reduction` has not been called.
         """
         if self.results == None:
-            print(
-                "WARNING: Please call the analyze_dimensionality_reduction method first before calling this one."
+            warnings.warn(
+                "Please call the `analyze_dimensionality_reduction` method first before calling the `table` method.",
+                category=UserWarning,
             )
             return
 
@@ -288,13 +307,29 @@ class DimensionalityReductionHandler:
 
     def visualization(self, labels=None):
         """
-        Visualize the results of dimensionality reduction methods in 2D.
+        Visualize 2D embeddings of the data using the selected dimensionality reduction methods.
+
+        This method reduces the data to 2D using each selected dimensionality reduction technique and creates scatter plots to visualize the results.
 
         Parameters:
-            labels (array-like, optional): Labels for coloring the scatter plots.
+            labels (array-like, optional): Labels for data points, used to color the scatter plots.
 
-        Each selected method will reduce the data to 2D and be plotted on a grid.
+        Requirements:
+            - The `analyze_dimensionality_reduction` method must be called prior to use.
+
+        Output:
+            Displays a grid of scatter plots showing the 2D projections for each method.
+
+        Raises:
+            UserWarning: If `analyze_dimensionality_reduction` has not been called.
         """
+        if self.results == None:
+            warnings.warn(
+                "Please call the `analyze_dimensionality_reduction` method first before calling the `visualization` method.",
+                category=UserWarning,
+            )
+            return
+
         fig, axes = plt.subplots(2, 4, figsize=(20, 10))
         axes = axes.flatten()
         plot_idx = 0
@@ -314,7 +349,7 @@ class DimensionalityReductionHandler:
                 reducer = umap.UMAP(n_components=2)
                 embedding_2d = reducer.fit_transform(self.data)
             elif method == "autoencoder":
-                embedding_2d = apply_autoencoder(
+                embedding_2d = get_autoencoder_embedding(
                     data=self.data, n_components=2, hidden_layer_neurons=4
                 )
             elif method == "pca":
@@ -350,12 +385,32 @@ class DimensionalityReductionHandler:
 
     def visualization_3d(self, labels=None, plot_in_3d=False):
         """
-        Visualizes the results of dimensionality reduction in 3D.
+        TODO: discussion about this function
+
+        Visualize the results of dimensionality reduction in 3D.
+
+        This method projects the data into 3D space using selected dimensionality reduction methods and creates scatter plots for visualization.
 
         Parameters:
-            labels (array-like, optional): Class labels for coloring points. Defaults to None.
-            plot_in_3d (bool, optional): ... Defaults to False.
+            labels (array-like, optional): Labels for data points, used to color the scatter plots. Defaults to None.
+            plot_in_3d (bool, optional): If True, visualizes the embeddings in 3D; otherwise, 2D plots are generated. Defaults to False.
+
+        Requirements:
+            - The `analyze_dimensionality_reduction` method must be called prior to use.
+
+        Output:
+            Displays scatter plots for each dimensionality reduction method, either in 2D or 3D based on the `plot_in_3d` parameter.
+
+        Raises:
+            UserWarning: If `analyze_dimensionality_reduction` has not been called.
         """
+        if self.results == None:
+            warnings.warn(
+                "Please call the `analyze_dimensionality_reduction` method first before calling the `visualization_3d` method.",
+                category=UserWarning,
+            )
+            return
+
         n_components = 3 if plot_in_3d else 2
         fig, axes = plt.subplots(
             2,
@@ -382,7 +437,7 @@ class DimensionalityReductionHandler:
                     reducer = umap.UMAP(n_components=n_components)
                     embedding = reducer.fit_transform(self.data)
                 elif method == "autoencoder":
-                    embedding = apply_autoencoder(
+                    embedding = get_autoencoder_embedding(
                         data=self.data,
                         n_components=n_components,
                         hidden_layer_neurons=6,
