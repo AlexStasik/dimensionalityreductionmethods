@@ -28,14 +28,17 @@ from .dr_methods import (
 
 class DimensionalityReductionHandler:
     """
-    Given data and a list of methods, this class provides numerical and graphical representations of reconstruction error (difference between original data and
-    its reconstruction after dimensionality reduction) and trustworthiness (how well local relationships are preserved in low dimensions vs high dimensions) to
-    determine the intrinsic dimensionality of the data.
+    This class applies various dimensionality reduction methods to the provided data and offers numerical and graphical representations of key metrics, such as:
+
+    - Reconstruction error: The difference between the original data and its reconstruction after dimensionality reduction.
+    - Trustworthiness: How well local relationships are preserved when reducing the data to lower dimensions.
+
+    These metrics help assess the performance of each method and determine the intrinsic dimensionality of the data.
 
     Attributes:
-        data: a numpy array represending the data to perform dimensionality reduction on
-        results: a dicionary of the methods and their associated reconstruction error and trustworthiness
-        methods: the methods to use to perform dimensionality reduction
+        data (numpy array): The dataset on which dimensionality reduction methods will be applied.
+        results (dict): A dictionary containing the results of each method, including reconstruction error and trustworthiness.
+        methods (list of strings): A list of methods to be used for dimensionality reduction.
     """
 
     def __init__(self, data):
@@ -48,21 +51,22 @@ class DimensionalityReductionHandler:
         self.data = data
         self.results = None
 
+        scaler = StandardScaler()
+        self.scaled_data = scaler.fit_transform(self.data)
+
     def analyze_dimensionality_reduction(
         self, methods, autoencoder_max_dim=sys.maxsize
     ):
         """
         Performs dimensionality reduction using the provided methods on the data from the initialization. The results are printed out.
 
-        Supported methods: PCA, KPCA, Isomap, UMAP, TSNE, Autoencoder.
+        Supported methods: PCA, KPCA, Isomap, UMAP, TSNE, Autoencoder, LLE.
 
         Parameters:
             methods (list of str): Dimensionality reduction methods to apply.
             autoencoder_max_dim (int, optional): Maximum dimension for Autoencoder to reduce computational stress. Defaults to sys.maxsize.
         """
         self.methods = [method.strip().lower() for method in methods]
-        scaler = StandardScaler()
-        scaled_data = scaler.fit_transform(self.data)
         results = {}
 
         method_funcs = {
@@ -89,7 +93,7 @@ class DimensionalityReductionHandler:
         self.methods = valid_methods
 
         results_list = Parallel(n_jobs=-1, timeout=7200)(
-            delayed(method_funcs[method])(scaled_data) for method in valid_methods
+            delayed(method_funcs[method])(self.scaled_data) for method in valid_methods
         )
 
         results = dict(zip(self.methods, results_list))
