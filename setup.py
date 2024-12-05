@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
 
 setup(
     name="dimensionalityreductionmethods",
-    version="0.1.1",
+    version="0.1.2",
     description="A package for applying, comparing, and visualizing dimensionality reduction methods across various target dimensions.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -26,6 +26,5 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
     ],
-    author="Afroditi Natsaridou, Darian Zhang",
-    author_email="asikonats@gmail.com, darianyzhang@gmail.com",
+    author="Afroditi Natsaridou <asikonats@gmail.com>, Darian Zhang <darianyzhang@gmail.com>",
 )
