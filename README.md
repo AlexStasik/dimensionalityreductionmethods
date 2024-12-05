@@ -10,11 +10,10 @@ With this package, users can:
 By combining automation, visualization, and flexibility, this package simplifies the exploration of high-dimensional datasets and guides users in choosing the best methods for their applications.
 
 ## Installation
-DimensionalityReductionMethods can be easily installed via pip from the [PyPI repository](https://test.pypi.org/project/dimensionalityreductionmethods/). The below command will install the DimensionalityReductionMethods package and its dependencies.
-NOTE: currently links to testpypi, same with below code
+DimensionalityReductionMethods can be easily installed via pip from the [PyPI repository](https://pypi.org/project/dimensionalityreductionmethods/). The below command will install the DimensionalityReductionMethods package and its dependencies.
 
 ```console
-pip install -i https://test.pypi.org/simple/ dimensionalityreductionmethods
+pip install dimensionalityreductionmethods
 ```
 
 ## Getting Started

@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
 
 setup(
     name="dimensionalityreductionmethods",
-    version="0.4.0",
+    version="0.1.1",
     description="A package for applying, comparing, and visualizing dimensionality reduction methods across various target dimensions.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
