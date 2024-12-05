@@ -305,91 +305,11 @@ class DimensionalityReductionHandler:
         print(tabulate(df, headers="keys", tablefmt="github", showindex=False))
         return df
 
-    def visualization(self, labels=None):
+    def visualization(self, labels=None, plot_in_3d=False):
         """
-        Visualize 2D embeddings of the data using the selected dimensionality reduction methods.
+        Visualize the results of dimensionality reduction in 2D or 3D.
 
-        This method reduces the data to 2D using each selected dimensionality reduction technique and creates scatter plots to visualize the results.
-
-        Parameters:
-            labels (array-like, optional): Labels for data points, used to color the scatter plots.
-
-        Requirements:
-            - The `analyze_dimensionality_reduction` method must be called prior to use.
-
-        Output:
-            Displays a grid of scatter plots showing the 2D projections for each method.
-
-        Raises:
-            UserWarning: If `analyze_dimensionality_reduction` has not been called.
-        """
-        if self.results == None:
-            warnings.warn(
-                "Please call the `analyze_dimensionality_reduction` method first before calling the `visualization` method.",
-                category=UserWarning,
-            )
-            return
-
-        fig, axes = plt.subplots(2, 4, figsize=(20, 10))
-        axes = axes.flatten()
-        plot_idx = 0
-
-        for method in self.methods:
-            if method not in self.results:
-                continue
-            embedding_2d = None
-
-            if method == "tsne":
-                tsne = TSNE(n_components=2, perplexity=4, random_state=42)
-                embedding_2d = tsne.fit_transform(self.data)
-            elif method == "isomap":
-                isomap = Isomap(n_components=2)
-                embedding_2d = isomap.fit_transform(self.data)
-            elif method == "umap":
-                reducer = umap.UMAP(n_components=2)
-                embedding_2d = reducer.fit_transform(self.data)
-            elif method == "autoencoder":
-                embedding_2d = get_autoencoder_embedding(
-                    data=self.data, n_components=2, hidden_layer_neurons=4
-                )
-            elif method == "pca":
-                pca = PCA(n_components=2)
-                embedding_2d = pca.fit_transform(self.data)
-            elif method == "kpca":
-                kpca = KernelPCA(n_components=2, kernel="rbf", gamma=0.1)
-                embedding_2d = kpca.fit_transform(self.data)
-            elif method == "lle":
-                lle = LocallyLinearEmbedding(n_components=2, n_neighbors=3)
-                embedding_2d = lle.fit_transform(self.data)
-
-            if embedding_2d is not None:
-                ax = axes[plot_idx]
-
-                if labels is not None:
-                    scatter = ax.scatter(
-                        embedding_2d[:, 0],
-                        embedding_2d[:, 1],
-                        c=labels,
-                        cmap="plasma",
-                        alpha=0.4,
-                    )
-                    fig.colorbar(scatter, ax=ax, label="Labels")
-                else:
-                    ax.scatter(embedding_2d[:, 0], embedding_2d[:, 1], alpha=0.4)
-
-                ax.set_title(f"{method}")
-                plot_idx += 1
-
-        plt.tight_layout()
-        plt.show()
-
-    def visualization_3d(self, labels=None, plot_in_3d=False):
-        """
-        TODO: discussion about this function
-
-        Visualize the results of dimensionality reduction in 3D.
-
-        This method projects the data into 3D space using selected dimensionality reduction methods and creates scatter plots for visualization.
+        This method projects the data into 2D or 3D space using selected dimensionality reduction methods and creates scatter plots for visualization.
 
         Parameters:
             labels (array-like, optional): Labels for data points, used to color the scatter plots. Defaults to None.
@@ -406,7 +326,7 @@ class DimensionalityReductionHandler:
         """
         if self.results == None:
             warnings.warn(
-                "Please call the `analyze_dimensionality_reduction` method first before calling the `visualization_3d` method.",
+                "Please call the `analyze_dimensionality_reduction` method first before calling the `visualization` method.",
                 category=UserWarning,
             )
             return
