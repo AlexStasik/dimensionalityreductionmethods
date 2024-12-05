@@ -1,11 +1,10 @@
-import sys, random, warnings, time, pprint
-
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from matplotlib import pyplot as plt
 from tabulate import tabulate
+from matplotlib import pyplot as plt
 from joblib import Parallel, delayed
+import sys, random, warnings, time, pprint
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import Isomap, TSNE, LocallyLinearEmbedding
@@ -25,16 +24,17 @@ from .dr_methods import (
 
 class DimensionalityReductionHandler:
     """
-    This class applies various dimensionality reduction methods to the provided data and offers numerical and graphical representations of key metrics, such as:
+    This class applies various dimensionality reduction methods to the initial dataset and provides numerical and graphical representations of below key metrics:
 
-    - Reconstruction error: The difference between the original data and its reconstruction after dimensionality reduction.
+    - Reconstruction error: the difference between the original data and its reconstruction after dimensionality reduction.
     - Trustworthiness: How well local relationships are preserved when reducing the data to lower dimensions.
+    - Total time: The time taken to run each method.
 
     These metrics help assess the performance of each method and determine the intrinsic dimensionality of the data.
 
     Attributes:
-        data (numpy array): The dataset on which dimensionality reduction methods will be applied.
-        results (dict): A dictionary containing the results of each method, including reconstruction error and trustworthiness.
+        data (numpy array): the dataset on which dimensionality reduction methods will be applied.
+        results: a tabulate containing the results of each method, including reconstruction error, trustworthiness and the total running time of each method.
         methods (list of strings): A list of methods to be used for dimensionality reduction.
     """
 
@@ -55,13 +55,13 @@ class DimensionalityReductionHandler:
         self, methods, autoencoder_max_dim=sys.maxsize
     ):
         """
-        Applies dimensionality reduction techniques to the dataset and computes performance metrics.
+        Performs dimensionality reduction techniques on the initial dataset and computes performance metrics.
 
-        Supported methods: PCA, KPCA, Isomap, UMAP, TSNE, Autoencoder, LLE.
+        Supported methods: PCA, KPCA, LLE, ISOMAP, UMAP, TSNE, AUTOENCODER.
 
         Parameters:
             methods (list of str): Dimensionality reduction methods to apply.
-            autoencoder_max_dim (int, optional): Maximum dimension for Autoencoder to reduce computational stress. Defaults to sys.maxsize.
+            autoencoder_max_dim (int, optional): maximum dimension for Autoencoder to reduce computational stress --> defaults to sys.maxsize.
         """
         self.methods = [method.strip().lower() for method in methods]
         results = {}

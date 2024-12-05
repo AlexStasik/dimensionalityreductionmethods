@@ -222,19 +222,19 @@ def run_autoencoder(scaled_data, autoencoder_max_dim):
     for dim in encoding_dims:
         input_layer = Input(shape=(input_dim,))
 
-        hidden1 = Dense(input_dim, activation="relu")(input_layer)
-        hidden2 = Dense(input_dim, activation="relu")(hidden1)
-        hidden3 = Dense(input_dim, activation="relu")(hidden2)
-        hidden4 = Dense(input_dim, activation="relu")(hidden3)
+        encoder_1 = Dense(input_dim, activation="relu")(input_layer)
+        encoder_2 = Dense(input_dim, activation="relu")(encoder_1)
+        encoder_3 = Dense(input_dim, activation="relu")(encoder_2)
+        encoder_4 = Dense(input_dim, activation="relu")(encoder_3)
 
-        encoded = Dense(dim, activation="relu")(hidden4)
+        encoded = Dense(dim, activation="relu")(encoder_4)
 
-        hidden5 = Dense(input_dim, activation="relu")(encoded)
-        hidden6 = Dense(input_dim, activation="relu")(hidden5)
-        hidden7 = Dense(input_dim, activation="relu")(hidden6)
-        hidden8 = Dense(input_dim, activation="relu")(hidden7)
+        decoder_1 = Dense(input_dim, activation="relu")(encoded)
+        decoder_2 = Dense(input_dim, activation="relu")(decoder_1)
+        decoder_3 = Dense(input_dim, activation="relu")(decoder_2)
+        decoder_4 = Dense(input_dim, activation="relu")(decoder_3)
 
-        decoded = Dense(input_dim, activation="sigmoid")(hidden8)
+        decoded = Dense(input_dim, activation="sigmoid")(decoder_4)
 
         autoencoder = Model(input_layer, decoded)
         encoder = Model(input_layer, encoded)
